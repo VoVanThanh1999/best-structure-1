@@ -1,0 +1,29 @@
+input CreateRoleInput {
+	nodeId: ID!
+	permissions: [ID!]!
+}
+
+# role - node ( 1 - n )
+type Role {
+	_id: ID!
+	nodeId: ID!
+	permissions: [ID!]!
+	createdAt: Float!
+	updatedAt: Float!
+}
+
+type Query {
+	roles: [Role]
+}
+
+type Mutation {
+	createRole(input: CreateRoleInput!): Role
+}
+
+# type UserRole {
+# 	_id: ID!
+# 	userId: ID!
+# 	roleId: ID!
+# 	createdAt: Float!
+# 	updatedAt: Float!
+# }
