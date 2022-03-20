@@ -1,0 +1,113 @@
+enum Gender {
+	MALE
+	FEMALE
+}
+
+enum RecordType {
+	User
+	File
+}
+
+type Users {
+	users: [User!]
+}
+
+union Result = User | File
+union UserResult = User | Users
+
+input UserInput {
+	firstName: String
+	lastName: String
+	email: String
+	password: String
+	gender: Gender
+}
+
+input FileInput {
+	filename: String
+}
+
+input RecordInput {
+	User: UserInput
+	File: FileInput
+}
+
+input CreateUserInput {
+	firstName: String!
+	lastName: String!
+	email: String!
+	password: String!
+	gender: Gender!
+}
+
+input UpdateUserInput {
+	firstName: String!
+	lastName: String!
+	password: String!
+	gender: Gender!
+}
+
+input LoginUserInput {
+	email: String!
+	password: String!
+}
+
+input SearchInput {
+	select: [String!]
+	where: RecordInput
+	start: Float
+	end: Float
+	order: JSONObject
+	skip: Int
+	take: Int
+}
+
+type LoginResponse {
+	token: String!
+}
+
+type User {
+	_id: ID!
+	firstName: String!
+	lastName: String!
+	email: String!
+	password: String!
+	gender: Gender!
+	resetPasswordToken: String
+	resetPasswordExpires: Float
+	fullName: String @upper @concat(value: "Chnirt")
+	isLocked: Boolean!
+	reason: String!
+	isActive: Boolean!
+	createdAt: Float!
+	updatedAt: Float!
+}
+
+type Query {
+	hello: String!
+	me: User @isAuthenticated
+	users(offset: Int, limit: Int): [User!] @isAuthenticated
+	user(_id: ID!): User @isAuthenticated
+	search(conditions: SearchInput!, type: RecordType!): [Result]! @isAuthenticated
+	searchUser(userIds: [String!]): UserResult!
+		@rateLimit(window: "3s", max: 1, message: "You are doing that too often.")
+	today: Date @date
+}
+
+type Mutation {
+	createUser(input: CreateUserInput!): User
+		@rateLimit(window: "5s", max: 1, message: "You are doing that too often.")
+	updateUser(_id: ID!, input: UpdateUserInput!): Boolean @isAuthenticated
+	deleteUser(_id: ID!): Boolean @isAuthenticated
+	deleteUsers: Boolean! @isAuthenticated
+	login(input: LoginUserInput!): LoginResponse
+	lockAndUnlockUser(_id: ID!, reason: String!): Boolean @isAuthenticated
+	changePassword(_id: ID!, currentpassword: String!, password: String!): Boolean
+		@isAuthenticated
+	forgotPassword(email: String!): Boolean
+	resetPassword(resetPasswordToken: String!, password: String!): Boolean
+}
+
+type Subscription {
+	userCreated: User @isAuthenticated
+}
