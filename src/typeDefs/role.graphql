@@ -1,0 +1,40 @@
+input PermissionInfoInput {
+	_id: String!
+	code: String!
+}
+
+input CreateRoleInput {
+	name: String!
+	nodeId: ID!
+	permissions: [PermissionInfoInput!]!
+}
+
+type PermissionInfo {
+	_id: ID
+	code: String
+}
+
+type Role {
+	_id: ID!
+	name: String!
+	nodeId: ID!
+	permissions: [PermissionInfo!]!
+	createdAt: Float!
+	updatedAt: Float!
+}
+
+type Query {
+	roles: [Role]
+}
+
+type Mutation {
+	createRole(input: CreateRoleInput!): Role
+}
+
+type UserRole {
+	_id: ID!
+	userId: ID!
+	roleId: ID!
+	createdAt: Float!
+	updatedAt: Float!
+}
